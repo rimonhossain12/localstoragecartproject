@@ -28,18 +28,20 @@ const generateItemCart = () => {
                   <div id="update-${id}">${item}</div>
                   <i onclick="increment(${id})" class="bi bi-plus"></i>
               </div>
+              <h3>$${item * price}</h3>
               </div>
+              
       </div>
               `;
     }));
   } else {
-     shoppingCart.innerHTML = `
+    shoppingCart.innerHTML = `
       <h4 class="emptyCart">Your Cart is Empty</h4>
      <a href="index.html">
      <button class="homeBtn"> Back to Home</button>
      </a>
      
-     `
+     `;
   }
 };
 
@@ -56,8 +58,11 @@ const increment = (id) => {
   } else {
     search.item += 1;
   }
+
   updateQuantity(selectedId);
   localStorage.setItem("order", JSON.stringify(basket));
+  generateItemCart();
+
 };
 
 const decrement = (id) => {
@@ -68,22 +73,28 @@ const decrement = (id) => {
   else {
     search.item -= 1;
   }
+
   updateQuantity(selectedId);
+
   basket = basket.filter((x) => x.item !== 0);
+
   generateItemCart();
 
   localStorage.setItem("order", JSON.stringify(basket));
+  
 };
 
 const updateQuantity = (id) => {
   const search = basket.find((x) => x.id === id);
   document.getElementById(`update-${id}`).innerHTML = search.item;
   cartQuantity();
+  // genereCartItem();
 };
 
 const cartQuantity = () => {
   const search = basket.map((x) => x.item).reduce((x, y) => x + y, 0);
   cartAmount.innerHTML = search;
+  // generateItemCart();
 };
 
 cartQuantity();
