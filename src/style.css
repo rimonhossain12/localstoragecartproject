@@ -14,6 +14,12 @@ body {
 i{
     cursor: pointer;
 }
+a{
+  text-decoration: none;
+  color: white;
+}
+
+
 /**
     *!navbar start from here
  */
