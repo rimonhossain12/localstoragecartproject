@@ -2,7 +2,7 @@ const cartAmount = document.getElementById("cartAmount");
 const shoppingCart = document.getElementById("shopping-cart");
 
 let basket = JSON.parse(localStorage.getItem("order")) || [];
-console.log(basket.length);
+// console.log(basket.length);
 
 const generateItemCart = () => {
   return (shoppingCart.innerHTML = basket.map((x) => {
@@ -47,6 +47,7 @@ const increment = (id) => {
     search.item += 1;
   }
   updateQuantity(selectedId);
+  cartQuantity();
   localStorage.setItem("order", JSON.stringify(basket));
 };
 
@@ -59,6 +60,7 @@ const decrement = (id) => {
         search.item -= 1;
     }
     updateQuantity(selectedId);
+    cartQuantity();
     localStorage.setItem('order',JSON.stringify(basket));
 }
 
@@ -72,5 +74,4 @@ const cartQuantity = () => {
   const search = basket.map((x) => x.item).reduce((x, y) => x + y, 0);
   cartAmount.innerHTML = search;
 };
-
 cartQuantity();
