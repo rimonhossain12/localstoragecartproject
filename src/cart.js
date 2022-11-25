@@ -5,6 +5,28 @@ const label = document.getElementById("label");
 let basket = JSON.parse(localStorage.getItem("order")) || [];
 // console.log(basket.length);
 
+const totalPrice = () => {
+  if (basket.length !== 0) {
+    const amount = basket
+      .map((x) => {
+        const { id, item } = x;
+        let filterData = shopItemsData.find((x) => x.id === id);
+        // console.log(filterData.price * item);
+        return filterData.price * item;
+      })
+      .reduce((x, y) => x + y, 0);
+    return label.innerHTML = `
+        <h2>Total Bill: $${amount}</h2>
+        <button class="checkout">checkout</button>
+        <button onclick="clearCart()" class="removeAll">Clear Cart</button>
+    `;
+  } else {
+    return;
+  }
+};
+
+totalPrice();
+
 const generateItemCart = () => {
   if (basket.length !== 0) {
     return (shoppingCart.innerHTML = basket.map((x) => {
@@ -37,7 +59,7 @@ const generateItemCart = () => {
     }));
   } else {
     shoppingCart.innerHTML = `
-      <h4 class="emptyCart">Your Cart is Empty</h4>
+      <h4 class="emptyCart">Cart is Empty</h4>
      <a href="index.html">
      <button class="homeBtn"> Back to Home</button>
      </a>
@@ -87,7 +109,7 @@ const updateQuantity = (id) => {
   const search = basket.find((x) => x.id === id);
   document.getElementById(`update-${id}`).innerHTML = search.item;
   cartQuantity();
-  // genereCartItem();
+  totalPrice();
 };
 
 const cartQuantity = () => {
@@ -98,30 +120,10 @@ const cartQuantity = () => {
 
 cartQuantity();
 
-const totalPrice = () => {
-  if (basket.length !== 0) {
-    const amount = basket.map((x) => {
-      const { id, item } = x;
-      let filterData = shopItemsData.find((x) => x.id === id);
-      console.log(filterData.price * item);
-      return filterData.price * item;
-    }).reduce((x,y) => x+y,0);
-    return label.innerHTML = `
-      <h2>Total Bill: $${amount}</h2>
-      <button class="checkout">checkout</button>
-      <button onclick="clearCart()" class="removeAll">Clear Cart</button>
-
-    `
-  }
-};
-
-totalPrice();
-
-
 const clearCart = () => {
   basket = [];
   generateItemCart();
-  localStorage.setItem('order',JSON.stringify(basket));
   
-  totalPrice();
-}
+  localStorage.setItem("order", JSON.stringify(basket));
+  cartQuantity();
+};
