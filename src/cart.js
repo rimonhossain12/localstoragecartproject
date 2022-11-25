@@ -47,7 +47,6 @@ const increment = (id) => {
     search.item += 1;
   }
   updateQuantity(selectedId);
-  cartQuantity();
   localStorage.setItem("order", JSON.stringify(basket));
 };
 
@@ -59,14 +58,17 @@ const decrement = (id) => {
     else {
         search.item -= 1;
     }
-    updateQuantity(selectedId);
-    cartQuantity();
+    updateQuantity(selectedId);   
+    basket = basket.filter((x) => x.item !== 0 );
+    generateItemCart();
+
     localStorage.setItem('order',JSON.stringify(basket));
 }
 
 const updateQuantity = (id) => {
    const search = basket.find((x) => x.id === id);
    document.getElementById(`update-${id}`).innerHTML = search.item;
+   cartQuantity();
 
 };
 
@@ -74,4 +76,5 @@ const cartQuantity = () => {
   const search = basket.map((x) => x.item).reduce((x, y) => x + y, 0);
   cartAmount.innerHTML = search;
 };
+
 cartQuantity();
