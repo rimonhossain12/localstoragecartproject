@@ -1,5 +1,6 @@
 const cartAmount = document.getElementById("cartAmount");
 const shoppingCart = document.getElementById("shopping-cart");
+const label = document.getElementById("label");
 
 let basket = JSON.parse(localStorage.getItem("order")) || [];
 // console.log(basket.length);
@@ -62,7 +63,6 @@ const increment = (id) => {
   updateQuantity(selectedId);
   localStorage.setItem("order", JSON.stringify(basket));
   generateItemCart();
-
 };
 
 const decrement = (id) => {
@@ -81,7 +81,6 @@ const decrement = (id) => {
   generateItemCart();
 
   localStorage.setItem("order", JSON.stringify(basket));
-  
 };
 
 const updateQuantity = (id) => {
@@ -98,3 +97,31 @@ const cartQuantity = () => {
 };
 
 cartQuantity();
+
+const totalPrice = () => {
+  if (basket.length !== 0) {
+    const amount = basket.map((x) => {
+      const { id, item } = x;
+      let filterData = shopItemsData.find((x) => x.id === id);
+      console.log(filterData.price * item);
+      return filterData.price * item;
+    }).reduce((x,y) => x+y,0);
+    return label.innerHTML = `
+      <h2>Total Bill: $${amount}</h2>
+      <button class="checkout">checkout</button>
+      <button onclick="clearCart()" class="removeAll">Clear Cart</button>
+
+    `
+  }
+};
+
+totalPrice();
+
+
+const clearCart = () => {
+  basket = [];
+  generateItemCart();
+  localStorage.setItem('order',JSON.stringify(basket));
+  
+  totalPrice();
+}

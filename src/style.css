@@ -175,3 +175,27 @@ a {
   font-family:Verdana, Geneva, Tahoma, sans-serif;
   margin-bottom: 5px;
 }
+
+.text-center{
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.checkout, .removeAll{
+  background-color: #212529;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 3px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+.checkout {
+  background-color: green;
+}
+
+.removeAll {
+  background-color: red;
+}
