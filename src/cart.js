@@ -1,74 +1,49 @@
-const cartAmount = document.getElementById("cartAmount");
-const shoppingCart = document.getElementById("shopping-cart");
-const label = document.getElementById("label");
+const shopping_cart = document.getElementById("shopping_cart");
+let basket = JSON.parse(localStorage.getItem("userOrder")) || [];
+const lable = document.getElementById("lable");
 
-let basket = JSON.parse(localStorage.getItem("order")) || [];
-// console.log(basket.length);
-
-const totalPrice = () => {
+const generateShop = () => {
   if (basket.length !== 0) {
-    const amount = basket
-      .map((x) => {
-        const { id, item } = x;
-        let filterData = shopItemsData.find((x) => x.id === id);
-        // console.log(filterData.price * item);
-        return filterData.price * item;
-      })
-      .reduce((x, y) => x + y, 0);
-    return label.innerHTML = `
-        <h2>Total Bill: $${amount}</h2>
-        <button class="checkout">checkout</button>
-        <button onclick="clearCart()" class="removeAll">Clear Cart</button>
-    `;
-  } else {
-    return;
-  }
-};
-
-totalPrice();
-
-const generateItemCart = () => {
-  if (basket.length !== 0) {
-    return (shoppingCart.innerHTML = basket.map((x) => {
-      // find all products id and item;
+    return (shopping_cart.innerHTML = basket.map((x) => {
       const { id, item } = x;
-      const searchData = shopItemsData.find((x) => x.id === id) || [];
-      const { name, img, price, title } = searchData;
-      // console.log(searchData);
+      const findData = shopItemsData.find((x) => x.id === id) || [];
+      const { name, price, img, title } = findData;
       return `
-          <div class="cart-item">
-              <img width="100" src="${img}" alt="not found" />
-              <div class="details">
-              <div class="title-price-x">
-                  <h4 class="title-price">
-                  <p>${name}</p>
-                  <p class="cart-item-price">$ ${price}</p>
-                  </h4>
-                  <i class="bi bi-x-lg"></i>
-              </div>
-              <div class="buttons">
-                  <i onclick="decrement(${id})" class="bi bi-dash"></i>
-                  <div id="update-${id}">${item}</div>
-                  <i onclick="increment(${id})" class="bi bi-plus"></i>
-              </div>
-              <h3>$${item * price}</h3>
-              </div>
-              
-      </div>
-              `;
-    }));
+                <div class="cart-item">
+                    <img width="100" src="${img}" alt="" />
+                    <div class="details">
+                    <div class="title-price-x">
+                        <h4 class="title-price">
+                        <p>${name}</p>
+                        <p class="cart-item-price">$${price}</p>
+                        </h4>
+                        <i class="bi bi-x-lg" onclick="removeItem(${id})"></i>
+                    </div>
+                    <div class="buttons">
+                        <i onclick="decrement(${id})" class="bi bi-dash"></i>
+                        <div id="update-${id}">
+                            ${item}
+                        </div>              
+                        <i onclick="increment(${id})" class="bi bi-plus"></i>
+                    </div>
+                    <strong style="text-align:center">Total Amount: $${
+                      item * price
+                    }</strong>
+                 </div>                
+              </div>`;
+    })).join("");
   } else {
-    shoppingCart.innerHTML = `
-      <h4 class="emptyCart">Cart is Empty</h4>
-     <a href="index.html">
-     <button class="homeBtn"> Back to Home</button>
-     </a>
-     
-     `;
+    shopping_cart.innerHTML = "";
+    lable.innerHTML = `
+            <h2 class="emptyText">Cart is Empty</h2>
+            <a href="index.html" class="homeLink">
+                <button class="homeBtn">Back to home</button>
+            </a>
+        `;
   }
 };
 
-generateItemCart();
+generateShop();
 
 const increment = (id) => {
   const selectedId = id;
@@ -81,10 +56,19 @@ const increment = (id) => {
   } else {
     search.item += 1;
   }
+  // console.log(basket);
+  update(selectedId);
+  calculatedQuantity();
+  totalAmount();
+  localStorage.setItem("userOrder", JSON.stringify(basket));
+  generateShop();
+};
 
-  updateQuantity(selectedId);
-  localStorage.setItem("order", JSON.stringify(basket));
-  generateItemCart();
+const update = (id) => {
+  let search = basket.find((x) => x.id === id);
+  document.getElementById(`update-${id}`).innerHTML = search.item;
+  totalAmount();
+  calculatedQuantity();
 };
 
 const decrement = (id) => {
@@ -96,34 +80,58 @@ const decrement = (id) => {
     search.item -= 1;
   }
 
-  updateQuantity(selectedId);
-
+  update(selectedId);
+  //!filter basket if item = 0 then basket one object remove();
   basket = basket.filter((x) => x.item !== 0);
-
-  generateItemCart();
-
-  localStorage.setItem("order", JSON.stringify(basket));
+  generateShop();
+  totalAmount();
+  localStorage.setItem("userOrder", JSON.stringify(basket));
 };
 
-const updateQuantity = (id) => {
-  const search = basket.find((x) => x.id === id);
-  document.getElementById(`update-${id}`).innerHTML = search.item;
-  cartQuantity();
-  totalPrice();
+const calculatedQuantity = () => {
+  cartAmount.innerHTML = basket.map((x) => x.item).reduce((x, y) => x + y, 0);
 };
 
-const cartQuantity = () => {
-  const search = basket.map((x) => x.item).reduce((x, y) => x + y, 0);
-  cartAmount.innerHTML = search;
-  // generateItemCart();
+calculatedQuantity();
+
+const removeItem = (id) => {
+  const selectedId = id;
+  basket = basket.filter((x) => x.id !== selectedId);
+
+  calculatedQuantity();
+  generateShop();
+  totalAmount();
+  localStorage.setItem("userOrder", JSON.stringify(basket));
 };
 
-cartQuantity();
+const totalAmount = () => {
+  if (basket.length !== 0) {
+    const amount = basket
+      .map((x) => {
+        const { id, item } = x;
+        const findPrice = shopItemsData.find((x) => x.id === id);
+        return findPrice.price * item;
+      })
+      .reduce((x, y) => x + y, 0);
+    return (lable.innerHTML = `
+      <div>
+        <h2>Total Bill: $${amount}</h2>
+        <a href="checkout.html">
+         <button class="checkout">Checkout</button>
+        </a> 
+        <button class="removeAll" onclick="clearCart()">Clear Cart</button>
+      </div>
+    `);
+  } else {
+    return;
+  }
+};
+
+totalAmount();
 
 const clearCart = () => {
   basket = [];
-  generateItemCart();
-  
-  localStorage.setItem("order", JSON.stringify(basket));
-  cartQuantity();
+  calculatedQuantity();
+  generateShop();
+  localStorage.setItem("userOrder", JSON.stringify(basket));
 };
